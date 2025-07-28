@@ -76,6 +76,7 @@ class _InteractifFormState extends State<InteractifForm> {
             keyboardType: TextInputType.number,
           ),
 
+          // if (int.parse(ageController.text) < 18) Text("Error"),
           Text("Mot de passe"),
           TextField(controller: mdpController, obscureText: true),
 
