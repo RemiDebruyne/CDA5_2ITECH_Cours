@@ -13,7 +13,7 @@
 </head>
 <body>
     <jsp:include page="WEB-INF/navbar.jsp"/>
-    <h1>Boostrap card</h1>
+    <h1>Boostrap card 2</h1>
     <div class="card" style="width: 18rem;">
         <img src="https://t3.ftcdn.net/jpg/02/36/99/22/360_F_236992283_sNOxCVQeFLd5pdqaKGh8DRGMZy7P4XKm.jpg" class="card-img-top" alt="...">
         <div class="card-body">
