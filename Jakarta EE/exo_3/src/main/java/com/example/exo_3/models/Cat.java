@@ -1,9 +1,22 @@
 package com.example.exo_3.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.time.LocalDate;
 import java.util.Date;
 
+@Entity
+@Table(name = "cats")
 public class Cat {
+    @Id
+    private Long id;
+
+    public Cat() {
+
+    }
+
     public String getName() {
         return name;
     }
@@ -46,5 +59,13 @@ public class Cat {
         this.race = race;
         this.favoriteFood = favoriteFood;
         this.birthdate = birthdate;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

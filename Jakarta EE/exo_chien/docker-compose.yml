@@ -1,0 +1,19 @@
+services:
+  db:
+    image: mysql
+    container_name: exo_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: exo_db
+    volumes:
+      - local_mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    
+
+volumes:
+  local_mysql:    
+
+
+# Pour lancer les caontainer
+# docker-compose up -d

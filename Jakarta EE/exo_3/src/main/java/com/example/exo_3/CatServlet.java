@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.hibernate.Session;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -13,7 +14,8 @@ import java.util.ArrayList;
 
 @WebServlet("/cats")
 public class CatServlet extends HttpServlet {
-    private ArrayList<Cat> cats = new ArrayList<>();
+    private Session session = factory.
+    private ArrayList<Cat> cats = sess;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("cats", cats);
@@ -23,7 +25,6 @@ public class CatServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         var cat = new Cat(request.getParameter("name"),request.getParameter("race"),request.getParameter("favoriteFood"), LocalDate.parse(request.getParameter("birthdate")));
         cats.add(cat);
-        System.out.println(cat.name);
         response.sendRedirect(getServletContext().getContextPath() + "/cats");
     }
 }

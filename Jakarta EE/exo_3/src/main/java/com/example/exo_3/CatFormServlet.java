@@ -16,7 +16,6 @@ public class CatFormServlet extends HttpServlet {
     public ArrayList<Cat> cats = new ArrayList<Cat>();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("cats", cats);
         req.getRequestDispatcher("/form.jsp").forward(req, resp);
     }
 
