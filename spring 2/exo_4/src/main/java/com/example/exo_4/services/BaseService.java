@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class BaseService<T, TId> implements IBaseService<T, TId>{
 
-    protected  IBaseRepository repository;
+    protected IBaseRepository repository;
 
     public BaseService(IBaseRepository repository) {
         this.repository = repository;

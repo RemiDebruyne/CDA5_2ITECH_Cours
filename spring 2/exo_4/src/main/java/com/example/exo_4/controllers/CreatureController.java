@@ -1,6 +1,7 @@
 package com.example.exo_4.controllers;
 
 import com.example.exo_4.entities.Creature;
+import com.example.exo_4.services.BaseService;
 import com.example.exo_4.services.CreatureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +17,11 @@ import java.util.Objects;
 public class CreatureController {
 
     private final CreatureService creatureService;
+    private final BaseService<Creature, Long> baseService;
 
-    public CreatureController(CreatureService creatureService) {
+    public CreatureController(CreatureService creatureService, BaseService<Creature, Long> baseService) {
         this.creatureService = creatureService;
+        this.baseService = baseService;
     }
 
     @PostMapping
@@ -28,7 +31,7 @@ public class CreatureController {
 
     @GetMapping
     public List<Creature> getAll() {
-        return creatureService.getAll();
+        return baseService.getAll();
     }
 
     @GetMapping("/paged")
