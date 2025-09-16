@@ -1,4 +1,4 @@
-import { QUESTIONS } from '../assets/quiz';
+import { QUESTIONS } from '../../assets/quiz';
 import { Question } from './Question';
 import { useState } from 'react';
 

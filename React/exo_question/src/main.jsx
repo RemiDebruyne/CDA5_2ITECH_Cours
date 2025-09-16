@@ -1,13 +1,13 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App.jsx';
-import { Question } from './components/Question.jsx';
-import { Quizz } from './components/Quizz.jsx';
+import { Quizz } from './components/Quizz/Quizz';
+import { Gallery } from './components/Gallery/Gallery';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     {/* <App /> */}
-    <Quizz />
+    {/* <Quizz /> */}
+    <Gallery />
   </StrictMode>
 );
