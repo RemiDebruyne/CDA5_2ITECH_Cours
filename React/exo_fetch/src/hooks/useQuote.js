@@ -16,6 +16,7 @@ export const useQuote = () => {
   };
 
   useEffect(() => {
+
     fetchNewQuote();
   }, []);
 
