@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 describe('ToggleMessage', () => {
   it('Message should not be displayed on first render', () => {
     render(<ToggleMessage />);
-    expect(screen.getByText(/Text/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Text/i)).toBeNull();
   });
 
   it('Displays message after one click on the button', async () => {

@@ -1,16 +1,14 @@
+import { useState } from 'react';
+
 export const ToggleMessage = () => {
-  let isHidden = true;
+  const [isHidden, setIsHidden] = useState(true);
 
   return (
     <>
-      <button>{isHidden ? 'display' : 'hide'}</button>
-      <h1
-        style={{
-          visibility: isHidden ? 'hidden' : 'visible',
-        }}
-      >
-        Text
-      </h1>
+      <button onClick={() => setIsHidden(!isHidden)}>
+        {isHidden ? 'display' : 'hide'}
+      </button>
+      {!isHidden && <h1>Text</h1>}
     </>
   );
 };
