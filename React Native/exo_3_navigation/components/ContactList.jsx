@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,11 @@ import {
   Modal,
   StyleSheet,
   FlatList,
+  Button,
 } from 'react-native';
+import { ContactContext } from './ContactProvider';
 
-import ContactPage from './ContactPage';
-
-export const ContactList = () => {
+export const ContactList = ({ navigation }) => {
   const circle = StyleSheet.create({
     width: 24,
     height: 24,
@@ -20,37 +20,13 @@ export const ContactList = () => {
     justifyContent: 'center',
   });
 
-  const contacts = [
-    {
-      id: 1,
-      name: 'Jean Bon',
-      phone: '01 02 03 04 05',
-      email: 'jean@mail.com',
-    },
-    {
-      id: 2,
-      name: 'Jean Pasbon',
-      phone: '01 02 03 04 05',
-      email: 'jean@mail.com',
-    },
-    {
-      id: 3,
-      name: 'Bob Bab',
-      phone: '01 02 03 04 05',
-      email: 'bob@mail.com',
-    },
-  ];
-
-  const [visible, setVisible] = useState(false);
-
-  const [currentContact, setCurrentContact] = useState({});
+  const { contacts, setContacts } = useContext(ContactContext);
 
   return (
     <View style={{ paddingTop: 24, alignItems: 'center' }}>
-      <Text style={{ fontSize: 48 }}>Contacts</Text>
       <FlatList
         contentContainerStyle={{ gap: '10' }}
-        style={{ flex: 1, padding: 16, width: '400' }}
+        style={{ padding: 16, width: '400' }}
         data={contacts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -64,8 +40,7 @@ export const ContactList = () => {
               alignItems: 'center',
             }}
             onPress={() => {
-              setVisible(true);
-              setCurrentContact(item);
+              navigation.navigate('ContactInfo', item);
             }}
           >
             <View style={circle}>
@@ -85,16 +60,7 @@ export const ContactList = () => {
         )}
       />
 
-      <Modal visible={visible}>
-        <ContactPage
-          userInfo={{
-            name: currentContact.name,
-            phone: currentContact.phone,
-            email: currentContact.email,
-          }}
-          onReturnClick={() => setVisible(false)}
-        />
-      </Modal>
+      <Button title="+" onPress={() => navigation.navigate('ContactForm')} />
     </View>
   );
 };

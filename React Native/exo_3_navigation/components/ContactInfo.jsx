@@ -10,13 +10,11 @@ import {
   Alert,
 } from 'react-native';
 import { Info } from './Info';
-export default function ContactPage({ userInfo, onReturnClick }) {
-  const { name, phone, email } = userInfo;
+export default function ContactInfo({ route }) {
+  const { name, phone, email, id } = route.params;
   async function makeCall(phoneNumber) {
-    // const possible = await Linking.canOpenURL('tel:+33012345678')
     const possible = await Linking.canOpenURL(phoneNumber);
     if (possible) {
-      // await Linking.openURL('tel:+33012345678')
       await Linking.openURL(phoneNumber);
     } else {
       Alert.alert('Pas possible ici');
@@ -73,7 +71,6 @@ export default function ContactPage({ userInfo, onReturnClick }) {
       </View>
 
       <StatusBar style="auto" />
-      <Button onPress={onReturnClick} title="Retour" />
     </View>
   );
 }
