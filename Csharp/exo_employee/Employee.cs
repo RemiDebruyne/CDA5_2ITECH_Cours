@@ -26,6 +26,15 @@ public class Employee
         Employees.Add(this);
     }
 
+    public Employee(int id, string service, string category, string name, int salary)
+    {
+        Id = id;
+        Service = service;
+        Category = category;
+        Name = name;
+        Salary = salary;
+    }
+
     public static void DeleteAllEmployee()
     {
         Employees.Clear();
@@ -44,5 +53,22 @@ public class Employee
     public void countEmployee()
     {
         Console.WriteLine($"There is {Employees.Count} in the company");
+    }
+
+    public static void AddEmployee(Employee employee)
+    {
+        if(Employees.Any(e => e.Id == employee.Id))
+        {
+            Console.WriteLine("Employee with this id already exists");
+        } else
+        {
+            Employees.Add(employee);
+        }
+    }
+
+    public static void GetEmployee(int id)
+    {
+        var employee = Employees.Where(employee => employee.Id == id);
+        Console.WriteLine(employee);
     }
 }
