@@ -1,12 +1,12 @@
-﻿using exo_ado_2.Entity;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities.Entity;
 
-namespace exo_ado_2.Reppository;
+namespace Utilities.Reppository;
 
 public class ClientRepository : BaseRepository<Client>
 {
@@ -32,7 +32,8 @@ public class ClientRepository : BaseRepository<Client>
         if (isUserDelete)
         {
             transaction.Commit();
-        } else
+        }
+        else
         {
             transaction.Rollback();
             return false;
@@ -45,7 +46,7 @@ public class ClientRepository : BaseRepository<Client>
     {
         Client client = GetById(id);
 
-        if(client is null)
+        if (client is null)
         {
             return null;
         }

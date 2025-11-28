@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace exo_ado_2.Entity;
+namespace Utilities.Entity;
 
 public abstract class Entity
 {

@@ -1,12 +1,14 @@
-﻿using exo_ado_2.Entity;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Utilities.Entity;
 
-namespace exo_ado_2.Reppository;
+namespace Utilities.Reppository;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
 {
@@ -18,8 +20,8 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
             p => p.Name != "Id" &&
 
             // Je n'ai pas réussi à faire un générique pour enlever tous les Enumerables/Listes.
-            p.PropertyType != typeof(List<Orders>))
-
+            p.PropertyType != typeof(List<Orders>) && 
+            p.PropertyType != typeof(List<Loan>))
         .Select(field => field.Name).ToList();
 
     public bool Add(T entity)
@@ -27,7 +29,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
         using SqlConnection connection = new SqlConnection(_connectionString);
         connection.Open();
 
-        string query = $"INSERT INTO {typeof(T).Name} ({string.Join(", ", _queryParameters)}) VALUES ({string.Join(", ", _queryParameters.Select(queryParam => $"@{queryParam}").ToList())})";
+        string query = $"INSERT INTO {typeof(T).Name} ({string.Join(", ", _queryParameters)}) VALUES ({string.Join(", ", _queryParameters.Select(queryParam => $"@{queryParam}"))})";
 
         SqlTransaction transaction = connection.BeginTransaction();
         SqlCommand cmd = new SqlCommand(query, connection, transaction);
@@ -82,7 +84,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
         return true;
     }
 
-    public List<T> GetAll()
+    public List<T> GetAll(Dictionary<string, string>? queryParameters = null)
     {
         List<T> entities = [];
         using SqlConnection connection = new SqlConnection(_connectionString);
@@ -91,7 +93,21 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
 
         string request = $"Select * FROM {nameof(T)}";
 
+        if(queryParameters.Count != 0)
+        {
+            request = $"{request} WHERE ";
+            foreach(var queryParameter in queryParameters)
+            {
+                request += $"{queryParameter.Key}=@{queryParameter.Key}";
+            }
+        }
+
         SqlCommand cmd = new SqlCommand(request, connection);
+
+        foreach (var queryParameter in queryParameters)
+        {
+            cmd.Parameters.AddWithValue($"@{queryParameter.Key}", queryParameter.Value);
+        }
 
         SqlDataReader reader = cmd.ExecuteReader();
 
@@ -132,8 +148,6 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
         using SqlConnection connection = new SqlConnection(_connectionString);
 
         connection.Open();
-
-        //string request = $"Update Student SET FirstName = @FirstName, LastName=@LastName, ClassNumber=@ClassNumber, GraduationDate=@GraduationDate";
 
         string request = $"Update {typeof(T).Name} SET {string.Join(", ", _queryParameters.Select(q => $"{q} = @{q}"))} WHERE Id=@id";
 
@@ -179,11 +193,6 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
                 }
             }
         }
-
-        // ====================================
-
-
-
         return instance;
     }
 
@@ -216,7 +225,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
 
     private static Dictionary<string, object?> GetPropertiesWithValues(SqlDataReader reader)
     {
-        var properties = typeof(T).GetProperties().ToList().Where(p => p.PropertyType != typeof(List<Orders>));
+        var properties = typeof(T).GetProperties().ToList().Where(p => p.PropertyType != typeof(List<Orders>) && p.PropertyType != typeof(List<Loan>));
 
         Dictionary<string, object?> namedProperties = [];
 
@@ -224,40 +233,6 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
         {
             namedProperties.Add(property.Name, reader[property.Name]);
         }
-
-
-
-
-        //while (reader.Read())
-        //{
-        //    foreach (var property in properties)
-        //    {
-        //        namedProperties.Add(property.Name, reader[property.Name]);
-        //    }
-        //}
-
-
-
-        //foreach(var property in properties)
-        //{
-        //    switch (property.PropertyType)
-        //    {
-        //        case Type t when t == typeof(string):
-        //            namedProperties.Add(property.Name, reader.GetString(index));
-        //            break;
-        //        case Type t when t == typeof(int):
-        //            namedProperties.Add(property.Name, reader.GetInt32(index));
-        //            break;
-        //        case Type t when t == typeof(DateTime):
-        //            namedProperties.Add(property.Name, reader.GetDateTime(index));
-        //            break;
-        //        case Type t when t == typeof(Double):
-        //            namedProperties.Add(property.Name, reader.GetDecimal(index));
-        //            break;
-        //    }
-
-        //    index++;
-        //}
 
         return namedProperties;
     }

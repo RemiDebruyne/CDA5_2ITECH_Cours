@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace exo_ado_2.Entity;
+namespace Utilities.Entity;
 
 public class Orders : Entity
 {
@@ -12,7 +12,7 @@ public class Orders : Entity
 
     public DateTime OrderDate { get; set; }
 
-    public Decimal TotalPrice { get; set; }
+    public decimal TotalPrice { get; set; }
 
     public override string ToString()
     {

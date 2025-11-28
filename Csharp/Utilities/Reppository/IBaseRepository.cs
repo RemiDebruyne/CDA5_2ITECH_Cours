@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace exo_ado_2.Reppository;
+namespace Utilities.Reppository;
 
 public interface IBaseRepository<T> where T : class, new()
 {
@@ -13,7 +13,7 @@ public interface IBaseRepository<T> where T : class, new()
 
     bool Update(int id, T entity);
 
-    List<T> GetAll();
+    List<T> GetAll(Dictionary<string, string>? queryParameters = null);
 
     T? GetById(int id);
 
