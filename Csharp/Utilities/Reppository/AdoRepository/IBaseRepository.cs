@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Reppository;
+namespace Utilities.Reppository.AdoRepository;
 
 public interface IBaseRepository<T> where T : class, new()
 {

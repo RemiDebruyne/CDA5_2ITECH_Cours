@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utilities.Entity;
+using Utilities.Entities.AdoEntities;
 
-namespace Utilities.Reppository;
+namespace Utilities.Reppository.AdoRepository;
 
 public class ClientRepository : BaseRepository<Client>
 {

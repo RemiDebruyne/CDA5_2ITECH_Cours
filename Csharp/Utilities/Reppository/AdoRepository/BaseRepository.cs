@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Utilities.Entity;
+using Utilities.Entities.AdoEntities;
 
-namespace Utilities.Reppository;
+namespace Utilities.Reppository.AdoRepository;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : class, new()
 {

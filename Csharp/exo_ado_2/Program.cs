@@ -1,5 +1,5 @@
-﻿using exo_ado_2.Entity;
-using exo_ado_2.Reppository;
+﻿using Utilities.Entities.AdoEntities;
+using Utilities.Reppository.AdoRepository;
 
 ClientRepository clientRepository = new();
 OrderRepository orderRepository = new();

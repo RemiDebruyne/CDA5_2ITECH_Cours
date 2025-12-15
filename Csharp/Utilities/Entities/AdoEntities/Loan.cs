@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Entity;
+namespace Utilities.Entities.AdoEntities;
 
 public class Loan
 {

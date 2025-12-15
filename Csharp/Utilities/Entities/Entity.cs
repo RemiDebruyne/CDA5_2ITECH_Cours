@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Entity;
+namespace Utilities.Entities;
 
-public abstract class Entity
+public class Entity
 {
     public int Id { get; set; }
 }

@@ -4,18 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utilities.Entity;
+using Utilities.Entities.AdoEntities;
 
-namespace Utilities.Reppository;
+namespace Utilities.Reppository.AdoRepository;
 
-public class OrderRepository : BaseRepository<Orders>
+public class LoanRepository : BaseRepository<Loan>
 {
-
-    public List<Orders> GetByClientId(int id)
+    public List<Loan> GetByClientId(int id)
     {
         using SqlConnection connection = new SqlConnection(_connectionString);
         connection.Open();
-        string request = "Select * FROM Orders WHERE ClientId = @clientId";
+        string request = "Select * FROM Loan WHERE ClientId = @clientId";
         SqlCommand cmd = new SqlCommand(request, connection);
 
         cmd.Parameters.AddWithValue("@clientId", id);
