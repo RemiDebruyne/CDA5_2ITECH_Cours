@@ -9,7 +9,7 @@ using Utilities.Entities;
 
 namespace Utilities;
 
-public class ApplicationDbContext: DbContext
+public class ApplicationDbContext: DbContext, IApplicationDbContext
 {
     public DbSet<Contact> Contacts { get; set; }
 

@@ -1,0 +1,12 @@
+﻿using Infrastructure.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Infrastructure.Interface;
+public interface IProductRepository : IRepository<Product>
+{
+    Task<List<Product>> GetAllWithParams(string category = "", string name = "");
+}
