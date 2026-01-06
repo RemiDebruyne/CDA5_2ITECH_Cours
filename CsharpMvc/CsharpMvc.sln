@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36804.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "exo_1_2_3", "exo_1\exo_1_2_3.csproj", "{020BBD93-D5C9-4690-B4A0-4CBD518FBBEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "exo_4", "exo_4\exo_4.csproj", "{821164AF-ADB3-47DE-8D79-A774E7A494BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{020BBD93-D5C9-4690-B4A0-4CBD518FBBEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020BBD93-D5C9-4690-B4A0-4CBD518FBBEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020BBD93-D5C9-4690-B4A0-4CBD518FBBEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020BBD93-D5C9-4690-B4A0-4CBD518FBBEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{821164AF-ADB3-47DE-8D79-A774E7A494BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{821164AF-ADB3-47DE-8D79-A774E7A494BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{821164AF-ADB3-47DE-8D79-A774E7A494BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{821164AF-ADB3-47DE-8D79-A774E7A494BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D937F0C9-1702-4330-8776-5EF3430FD949}
+	EndGlobalSection
+EndGlobal

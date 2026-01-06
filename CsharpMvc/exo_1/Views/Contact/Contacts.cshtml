@@ -1,0 +1,20 @@
+﻿@* Can do this and then use it with just "Model" *@
+@Model List<Contact>
+
+@*If i use a class ContactList that has a List<Contact> Contacts then I do Model ContactList and call Model.Contacts but that is bad*@
+@{
+    ViewData["Title"] = "Contacts";
+}
+
+<h1>Contacts</h1>
+<p>This page displays contacts</p>
+
+@foreach(var contact in ViewBag.Contacts)
+{
+    <p>@contact</p>
+}
+
+@foreach (var contact in Model)
+{
+    <p>@contact.Name</p>
+}
