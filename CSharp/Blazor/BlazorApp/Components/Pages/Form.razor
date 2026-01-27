@@ -1,0 +1,83 @@
+﻿@page "/form"
+<h1>Form</h1>
+
+@if (!isSubscribed)
+{
+    <div>
+        <div>
+            <label for="name">name: </label>
+            <input type="text" class="form-control" @bind="name" />
+        </div>
+        <div>
+            <label for="email">email: </label>
+            <input type="text" class="form-control" @bind="email" />
+        </div>
+        <div>
+            <input type="range" id="participant" name="participant" min="1" max="5" @bind="participant" />
+            <label for="participant">@participant participants</label>
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">Vip ? (+50€)</label>
+            <input type="checkbox" class="form-check-input" @bind="isVip" />
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">Acceptez les conditions</label>
+            <input type="checkbox" class="form-check-input" @bind="isConditionAccepted" />
+        </div>
+        @if (name != "" && email != "" && isConditionAccepted)
+        {
+            <button @onclick="HandleSubmit">S'inscrire</button>
+        }
+        else
+        {
+            <button disabled>S'inscrire</button>
+        }
+
+       
+    </div>
+} else
+{
+    <p>Vous etes inscript</p>
+    <div>
+        @if (isVip)
+        {
+            <h2> <strong>VIP</strong></h2>
+        }
+        name: @name
+        email: @email
+        participant: @participant
+        email: @email
+        Price: @CalculatePrice()
+        @if (isConditionAccepted)
+        {
+            <p style="color:green">Vous avez accepté les conditions</p>
+        }
+        else
+        {
+            <p style="color:red"> Vous n'avez pas accepté les conditions</p>
+        }
+    </div>
+
+    <button @onclick="() => isSubscribed = false">Désinscrire</button>
+}
+
+
+@code {
+    private string name = "";
+    private string email = "";
+    private int participant = 1;
+    private bool isVip = false;
+    private bool isConditionAccepted = false;
+    private bool isSubscribed = false;
+
+    private int CalculatePrice()
+    {
+        return isVip ? 20 * participant + 50 : 20 * participant;
+    }
+
+    private void HandleSubmit()
+    {
+        if (name != "" && email != "" && isConditionAccepted)
+            isSubscribed = true;
+    }
+}
