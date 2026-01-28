@@ -1,0 +1,33 @@
+﻿@using TodoApp.Models
+
+<div style="display:flex;">
+    <input type="checkbox" @onchange="HandleChange" />
+    <p>@Todo.Task</p>
+    @if (IsDateDisplayed)
+    {
+        <p>@Todo.CreationDate</p>
+    }
+    <button @onclick="() => OnDelete.InvokeAsync(Todo.Id)">Supprimer</button>
+    <p>@(Todo.IsCompleted ? "TERMINE" : "PAS TERMINE")</p>
+</div>
+
+@code {
+    [Parameter]
+    public Todo Todo { get; set; }
+
+    [Parameter]
+    public bool IsDateDisplayed { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnDelete { get; set; }
+
+
+    [Parameter]
+    public EventCallback OnChange { get; set; }
+
+    public async Task HandleChange()
+    {
+        Todo.IsCompleted = !Todo.IsCompleted;
+        await OnChange.InvokeAsync();
+    }
+}

@@ -1,0 +1,61 @@
+﻿@page "/todolist"
+@using TodoApp.Components
+@using TodoApp.Models
+
+<h1>Ma TodoList</h1>
+
+<div>
+    <input placeholder="Nouvelle tâche..." @bind="NewTask" />
+    <button @onclick="HandleAddTodo">Ajouter</button>
+</div>
+<TodoItemManager Todos="Todos" />
+
+@if(Todos.Count > 0)
+{
+    @if (Todos.TrueForAll(t => t.IsCompleted))
+    {
+        <h2>Félicitations toutes les tâches sont terminées</h2>
+    }
+    @foreach (var todo in Todos)
+    {
+        <TodoItem @key="todo.Id" Todo="todo" OnDelete="HandleDelete" OnChange="StateHasChanged" IsDateDisplayed="IsDateDisplayed" />
+    }
+
+} else
+{
+    <h2>Aucune tâche pour le moment</h2>
+}
+
+<label>Afficher les dates</label>
+<input type="checkbox" @bind="IsDateDisplayed">
+<button @onclick="DeleteAllTask">Supprimer toutes les taches</button>
+
+@code {
+    private List<Todo> Todos = [];
+
+    private string NewTask = "";
+
+    private bool IsDateDisplayed = true;
+
+    private void HandleAddTodo()
+    {
+        Todos.Add(new Todo
+        {
+            Task = NewTask,
+            IsCompleted = false,
+        });
+
+        NewTask = "";
+    }
+
+    private void HandleDelete(Guid id)
+    {
+        Console.WriteLine("test");
+        Todos.Remove(Todos.FirstOrDefault(Todo => Todo.Id == id));
+    }
+
+    private void DeleteAllTask()
+    {
+        Todos.Clear();
+    }
+}

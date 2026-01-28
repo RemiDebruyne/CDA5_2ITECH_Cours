@@ -1,0 +1,10 @@
+﻿@using TodoApp.Models
+<div>
+    Total: @Todos.Count, Terminées:@Todos.Count(todo => todo.IsCompleted), Restantes: @Todos.Count(t => !t.IsCompleted)
+</div>
+
+@code {
+    [Parameter]
+    public List<Todo> Todos { get; set; }
+
+}
