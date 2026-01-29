@@ -1,14 +1,21 @@
 ﻿@using TodoApp.Models
 
-<div style="display:flex;">
-    <input type="checkbox" @onchange="HandleChange" />
-    <p>@Todo.Task</p>
-    @if (IsDateDisplayed)
-    {
-        <p>@Todo.CreationDate</p>
-    }
-    <button @onclick="() => OnDelete.InvokeAsync(Todo.Id)">Supprimer</button>
-    <p>@(Todo.IsCompleted ? "TERMINE" : "PAS TERMINE")</p>
+<div style="display:flex;gap:16px;">
+    <div style="display:flex;gap:16px;">
+        <input type="checkbox" @onchange="HandleChange" />
+        <p>@Todo.Task</p>
+    </div>
+
+    <div style="display:flex;gap:16px;">
+        @if (IsDateDisplayed)
+        {
+            <p>@Todo.CreationDate</p>
+        }
+        <button @onclick="() => OnDelete.InvokeAsync(Todo)">Supprimer</button>
+        <p>@(Todo.IsCompleted ? "TERMINE" : "PAS TERMINE")</p>
+    </div>
+
+
 </div>
 
 @code {
@@ -19,7 +26,7 @@
     public bool IsDateDisplayed { get; set; }
 
     [Parameter]
-    public EventCallback<Guid> OnDelete { get; set; }
+    public EventCallback<Todo> OnDelete { get; set; }
 
 
     [Parameter]

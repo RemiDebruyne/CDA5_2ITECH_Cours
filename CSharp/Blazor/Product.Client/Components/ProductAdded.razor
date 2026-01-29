@@ -1,0 +1,25 @@
+﻿@if (_visible)
+{
+    <div class="alert alert-success">
+        Produit ajouté avec succès
+    </div>
+}
+
+@code {
+    [Parameter] public bool Show { get; set; }
+
+    private bool _visible;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Show)
+        {
+            _visible = true;
+            StateHasChanged();
+
+            await Task.Delay(3000);
+
+            _visible = false;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+﻿@using Product.Domain.Models
+<div>
+    <div>Total: @Produits.Count</div>
+    <div>Actifs: @Produits.Count(p => p.EstActif)</div>
+    <div>Rupture: @Produits.Count(p => p.Stock == 0)</div>
+    <div>Valeur: @Produits.Sum(p => p.Prix)</div>
+</div>
+
+@code {
+    [Parameter]
+    public List<Produit> Produits { get; set; } = [];
+}

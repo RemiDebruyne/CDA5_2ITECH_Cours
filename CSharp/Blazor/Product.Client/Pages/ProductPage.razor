@@ -1,0 +1,99 @@
+﻿@page "/"
+@using Product.Client.Components
+@using Product.Client.Services
+@using Product.Domain.Models
+
+@inject IProduitServiceClient ProduitService
+
+
+<hr />
+
+<FormModal produitAjoute="OnProduitAjoute" />
+<ProductAdded Show="produitAjoute" />
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>📦 Produits (depuis l'API)</span>
+        <button class="btn btn-sm btn-outline-primary" @onclick="Charger">🔄 Recharger</button>
+    </div>
+    <div class="card-body">
+        @if (chargement)
+        {
+            <div class="py-4 text-center">
+                <div class="spinner-border text-primary"></div>
+                <p class="mt-2">Chargement...</p>
+            </div>
+        }
+        else
+        {
+            <table class="table-striped table-hover table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Catégorie</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (produits.Count == 0)
+                    {
+                        <h1>@produits</h1>
+                    }
+                    @foreach (var p in produits)
+                    {
+                        <tr>
+                            <td>@p.Id</td>
+                            <td>@p.Nom</td>
+                            <td>@p.Categorie</td>
+                            <td class="text-success fw-bold">@p.Prix.ToString("C")</td>
+                            <td><span class="badge @(p.Stock > 0 ? "bg-success" : "bg-danger")">@p.Stock</span></td>
+                            <td>@p.EstActif</td>
+                            <div>
+                                <button>Update</button>
+                                <button @onclick="() => Delete(p.Id)">Delete</button>
+                            </div>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<ProduitInfo Produits="produits" />
+
+<hr />
+
+@code {
+    private List<Produit> produits = new();
+    private bool chargement = true;
+    private bool produitAjoute = false;
+
+    protected override async Task OnInitializedAsync() => await Charger();
+
+    private async Task Charger()
+    {
+        chargement = true;
+        produits = await ProduitService.ObtenirTousAsync();
+        chargement = false;
+    }
+
+    private async Task Delete(int id)
+    {
+        await ProduitService.SupprimerAsync(id);
+
+        await Charger();
+    }
+
+    public async Task OnProduitAjoute(bool success)
+    {
+        if (success)
+        {
+            produitAjoute = true;
+            await Charger();
+        }
+    }
+}

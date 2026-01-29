@@ -1,0 +1,93 @@
+﻿@using Product.Client.Services
+@using Product.Domain.Models
+@inject IProduitServiceClient ProduitService
+
+@if (!IsOpen)
+{
+    <button @onclick="() => IsOpen = true">Ajouter</button>
+} else
+{
+    <button @onclick="() => IsOpen = false">X</button>
+    <div class="card mb-3">
+        <div class="card-header">Formulaire de Contact</div>
+        <div class="card-body">
+            <EditForm Model="@produit" OnValidSubmit="AjouterProduit">
+                <DataAnnotationsValidator />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nom *</label>
+                        <InputText class="form-control" @bind-Value="produit.Nom" />
+                        <ValidationMessage For="@(() => produit.Nom)" class="text-danger small" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Description *</label>
+                        <InputText class="form-control" @bind-Value="produit.Description" />
+                        <ValidationMessage For="@(() => produit.Description)" class="text-danger small" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Categorie *</label>
+                    <InputSelect class="form-select" @bind-Value="produit.Categorie">
+                        <option value="">-- --</option>
+                        <option value="Informatique">Informatique</option>
+                        <option value="Accesoires">Accessoires</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Gaming">Gaming</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => produit.Categorie)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Prix *</label>
+                    <InputNumber class="form-control" rows="4" @bind-Value="produit.Prix" />
+                    <ValidationMessage For="@(() => produit.Prix)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Stock *</label>
+                    <InputNumber class="form-control" rows="4" @bind-Value="produit.Stock" />
+                    <ValidationMessage For="@(() => produit.Stock)" class="text-danger small" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Actif *</label>
+                    <InputCheckbox class="form-check-label" @bind-Value="produit.EstActif" />
+                    <ValidationMessage For="@(() => produit.EstActif)" class="text-danger small" />
+                </div>
+
+
+                <button type="submit" class="btn btn-primary">📧 Envoyer</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+
+@code {
+    public bool IsOpen { get; set; } = false;
+
+    private ProduitDto produit = new();
+
+    [Parameter]
+    public EventCallback<bool> produitAjoute { get; set; }
+
+
+    private async Task AjouterProduit()
+    {
+        var res = await ProduitService.AjouterAsync(produit);
+
+        if (res is null)
+        {
+            await produitAjoute.InvokeAsync(false);
+        }
+        else
+        {
+            await produitAjoute.InvokeAsync(true);
+            produit = new();
+        }
+
+        IsOpen = false;
+
+    }
+}

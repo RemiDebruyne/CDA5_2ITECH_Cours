@@ -10,7 +10,7 @@
 </div>
 <TodoItemManager Todos="Todos" />
 
-@if(Todos.Count > 0)
+@if (Todos.Count > 0)
 {
     @if (Todos.TrueForAll(t => t.IsCompleted))
     {
@@ -21,14 +21,19 @@
         <TodoItem @key="todo.Id" Todo="todo" OnDelete="HandleDelete" OnChange="StateHasChanged" IsDateDisplayed="IsDateDisplayed" />
     }
 
-} else
+}
+else
 {
     <h2>Aucune tâche pour le moment</h2>
 }
+<div style="display:flex;gap:12px;">
 
-<label>Afficher les dates</label>
-<input type="checkbox" @bind="IsDateDisplayed">
-<button @onclick="DeleteAllTask">Supprimer toutes les taches</button>
+    <div>
+        <label>Afficher les dates</label>
+        <input type="checkbox" @bind="IsDateDisplayed">
+    </div>
+    <button @onclick="DeleteAllTask">Supprimer toutes les taches</button>
+</div>
 
 @code {
     private List<Todo> Todos = [];
@@ -48,10 +53,9 @@
         NewTask = "";
     }
 
-    private void HandleDelete(Guid id)
+    private void HandleDelete(Todo todo)
     {
-        Console.WriteLine("test");
-        Todos.Remove(Todos.FirstOrDefault(Todo => Todo.Id == id));
+        Todos.Remove(todo);
     }
 
     private void DeleteAllTask()
