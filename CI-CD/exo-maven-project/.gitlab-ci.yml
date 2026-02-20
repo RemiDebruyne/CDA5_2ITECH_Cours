@@ -1,0 +1,69 @@
+stages:
+  - build
+  - test
+  - packaging
+  - trivy
+
+variables:
+  DOCKER_CONTAINER_NAME: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_TITLE}
+
+build:
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - mvn clean install
+  artifacts:
+    paths:
+      - target/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+test:
+  stage: test
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - mvn test jacoco:report
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/*.xml
+      coverage_report:
+        coverage_format: jacoco
+        path: target/site/jacoco/jacoco.xml
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+packaging:
+  stage: packaging
+  image: docker:28.4
+  services:
+    - docker:28.4-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build -t ${DOCKER_CONTAINER_NAME}:${CI_COMMIT_SHORT_SHA} .
+    - docker build -t ${DOCKER_CONTAINER_NAME}:latest .
+    - docker push -a ${DOCKER_CONTAINER_NAME}
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+trivy:
+  stage: trivy
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: ['']
+  variables:
+    TRIVY_CACHE_DIR: '.trivycache'
+  cache:
+    paths:
+      - .trivycache/
+  script:
+    - trivy fs . --exit-code 0 --severity HIGH,CRITICAL -f json -o trivy-dependencies-report.json
+  artifacts:
+    paths:
+      - trivy-dependencies-report.json
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'

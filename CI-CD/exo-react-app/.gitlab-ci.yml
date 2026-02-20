@@ -1,0 +1,88 @@
+stages:
+  - build
+  - test-build
+  - test
+  - packaging
+  - deploy
+
+variables:
+  DOCKER_CONTAINER_NAME: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_TITLE}
+
+.node-install:
+  image: node:alpine
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+  before_script:
+    - npm ci
+
+build:
+  stage: build
+  extends: .node-install
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+test-build:
+  stage: test-build
+  image: alpine
+  dependencies:
+    - build
+  script:
+    - grep '<div id="root"></div>' dist/index.html
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+test:
+  stage: test
+  extends: .node-install
+  script:
+    - npm run test
+  artifacts:
+    when: always
+    reports:
+      junit: reports/junit.xml
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+packaging:
+  stage: packaging
+  image: docker:28.4
+  services:
+    - docker:28.4-dind
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - docker build -t ${DOCKER_CONTAINER_NAME}:${CI_COMMIT_SHORT_SHA} .
+    - docker build -t ${DOCKER_CONTAINER_NAME}:latest .
+    - docker push -a ${DOCKER_CONTAINER_NAME}
+
+deploy:
+  stage: deploy
+  image: alpine
+  dependencies:
+    - build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  before_script:
+    - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    - echo "$DEPLOY_KEY" | base64 -d > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
+  script:
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "mkdir -p /var/www/myapp"
+    - scp -r dist/* $DEPLOY_USER@$DEPLOY_HOST:/var/www/myapp
+    - ssh $DEPLOY_USER@$DEPLOY_HOST "nohup npx serve -s /var/www/myapp -l 3000 > ~/myapp.log 2>&1 &"

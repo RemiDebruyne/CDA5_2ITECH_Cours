@@ -1,0 +1,125 @@
+stages:
+  - trivy
+  - build
+  - test
+  - sonar
+  - packaging
+  - deploy
+
+variables:
+  DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/exo-aws
+  DOCKER_CONTAINER_NAME: api-java
+  SONAR_USER_HOME: '${CI_PROJECT_DIR}/.sonar' # Defines the location of the analysis task cache
+  GIT_DEPTH: '0' # Tells git to fetch all the branches of the project, required by the analysis task
+  MVN_CLI_ARGS: '-B -Dmaven.repo.local=.m2/repository -Dmaven.test.failure.ignore=false'
+
+.maven-cache:
+  cache:
+    key: maven-$CI_COMMIT_REF_SLUG
+    paths:
+      - .m2/repository
+
+trivy:
+  stage: trivy
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: ['']
+  variables:
+    TRIVY_CACHE_DIR: '.trivycache'
+  cache:
+    paths:
+      - .trivycache/
+  script:
+    - trivy fs . --exit-code 0 --severity HIGH,CRITICAL -f json -o trivy-dependencies-report.json
+  artifacts:
+    paths:
+      - trivy-dependencies-report.json
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+build:
+  expends: .maven-cache
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - mvn $MVN_CLI_ARGS clean install -DskipTests
+  artifacts:
+    paths:
+      - target/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+test:
+  expends: .maven-cache
+  stage: test
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - mvn $MVN_CLI_ARGS verify
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/*.xml
+      coverage_report:
+        coverage_format: jacoco
+        path: target/site/jacoco/jacoco.xml
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+sonarcloud-check:
+  expends: .maven-cache
+  stage: sonar
+  image: maven:3.9.6-eclipse-temurin-21
+  cache:
+    key: '${CI_JOB_NAME}'
+    paths:
+      - .sonar/cache
+  script:
+    - mvn $MVN_CLI_ARGS verify sonar:sonar -Dsonar.projectKey=exo-group_exo-aws
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+packaging:
+  stage: packaging
+  image: docker:29
+  services:
+    - docker:29-dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA .
+    - docker build -t $DOCKER_IMAGE_NAME:latest .
+    - docker push -a $DOCKER_IMAGE_NAME
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+deploy:
+  stage: deploy
+  image: alpine
+  before_script:
+    - apk update
+    - apk add openssh
+    - mkdir -p ~/.ssh
+    - echo $EC2_SSH_KEY | base64 -d >> ~/.ssh/aws-key.pem
+    - chmod 600 ~/.ssh/aws-key.pem
+    - echo $EC2_KNOWN_HOST | base64 -d >> ~/.ssh/known_hosts
+    - chmod 600 ~/.ssh/known_hosts
+  # script:
+  #   - ssh -i ~/.ssh/aws-key.pem ${EC2_USER}@${EC2_HOST} "echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY && \
+  #     docker pull $DOCKER_IMAGE_NAME && \
+  #     docker stop $DOCKER_CONTAINER_NAME || true && \
+  #     docker rm $DOCKER_CONTAINER_NAME || true && \
+  #     docker run -d --name $DOCKER_CONTAINER_NAME -p 80:8080 $DOCKER_IMAGE_NAME"
+  script:
+    - ssh -i ~/.ssh/aws-key.pem ${EC2_USER}@${EC2_HOST} bash -lc "'
+      echo \"$CI_REGISTRY_PASSWORD\" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY &&
+      docker pull $DOCKER_IMAGE_NAME &&
+      docker stop $DOCKER_CONTAINER_NAME || true &&
+      docker rm $DOCKER_CONTAINER_NAME || true &&
+      docker run -d --name $DOCKER_CONTAINER_NAME -p 80:8080 $DOCKER_IMAGE_NAME'"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
