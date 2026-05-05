@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-hostpath
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-hostpath
+  template:
+    metadata:
+      labels:
+        app: api-hostpath
+    spec:
+      nodeSelector:
+        data: 'true'
+      containers:
+        - name: api
+          image: remidebruyne/api-python
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
+      volumes:
+        - name: logs
+          hostPath:
+            path: /tmp/logs
+            type: DirectoryOrCreate

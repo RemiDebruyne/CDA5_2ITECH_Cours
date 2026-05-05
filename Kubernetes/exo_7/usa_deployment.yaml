@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: usa-deployment
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: usa-pod
+      labels:
+        app: nginx
+    spec:
+      tolerations:
+        - key: 'country'
+          operator: 'Equal'
+          value: 'usa'
+          effect: 'NoSchedule'
+      containers:
+        - name: usa-container
+          image: nginx:alpine
+          resources:
+            requests:
+              memory: '64Mi'
+              cpu: '100m'
+            limits:
+              memory: '128Mi'
+              cpu: '200m'

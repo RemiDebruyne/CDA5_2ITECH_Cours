@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-no-volume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-no-volume
+  template:
+    metadata:
+      labels:
+        app: api-no-volume
+    spec:
+      containers:
+        - name: api
+          image: remidebruyne/api-python
+          ports:
+            - containerPort: 5000
